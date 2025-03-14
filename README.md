@@ -36,13 +36,6 @@ This Python script allows you to back up Slack messages (including public channe
 
 3. **Create a Slack App**:
    - Go to the [Slack API](https://api.slack.com/apps) and create a new app. See [this instruction](SlackAppSetup.md) for more details.
-   - Add the following OAuth scopes to your app:
-     - `channels:history`
-     - `groups:history`
-     - `im:history`
-     - `mpim:history`
-     - `users:read`
-     - `files:read`
    - Install the app to your workspace and obtain the **User OAuth Token**.
 
 4. **Edit the `config.txt` File**:
@@ -67,11 +60,11 @@ This Python script allows you to back up Slack messages (including public channe
 
    You can choose whether or not you want to backup the attachments in the conversation, by setting the `Backup_Attachments` to `True` or `False`.
 
-   The Backup_List could be `all` or a specific list of conversations you want to backup, e.g. `general, bob`, where `general` is the general channel and `bob` is the display name of a user in your workspace.
+   The `Backup_List` could be `all` or a specific list of conversations you want to backup, e.g. `general, bob`, where `general` is the general channel and `bob` is the display name of a user in your workspace.
 
 5. **Run the Script**:
    ```bash
-   python backup_slack.py
+   python slack_backup.py
    ```
 
    The script will back up messages and attachments to the specified directories.
