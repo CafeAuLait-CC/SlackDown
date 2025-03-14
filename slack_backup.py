@@ -1,15 +1,16 @@
-import os
-import certifi
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
-import time
-from datetime import datetime
-import requests
 import configparser
-import emoji
 import hashlib
+import os
 import shutil
 import tempfile
+import time
+from datetime import datetime
+
+import certifi
+import emoji
+import requests
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 
 os.environ["SSL_CERT_FILE"] = certifi.where()
@@ -23,9 +24,15 @@ SLACK_TOKEN = config.get("Slack", "User_OAuth_Token")
 
 # Directories
 DIRECT_MSG_DIRECTORY = config.get("Directories", "Direct_Msg_Directory", fallback="dm")
-GROUP_MSG_DIRECTORY = config.get("Directories", "Group_Msg_Directory", fallback="groups")
-CHANNEL_MSG_DIRECTORY = config.get("Directories", "Channel_Msg_Directory", fallback="channels")
-ATTACHMENTS_DIRECTORY = config.get("Directories", "Attachment_Directory", fallback="attachments")
+GROUP_MSG_DIRECTORY = config.get(
+    "Directories", "Group_Msg_Directory", fallback="groups"
+)
+CHANNEL_MSG_DIRECTORY = config.get(
+    "Directories", "Channel_Msg_Directory", fallback="channels"
+)
+ATTACHMENTS_DIRECTORY = config.get(
+    "Directories", "Attachment_Directory", fallback="attachments"
+)
 
 # Backup options
 BACKUP_ATTACHMENTS = config.getboolean("Options", "Backup_Attachments", fallback=True)
@@ -49,14 +56,19 @@ SLACK_EMOJI_MAPPING = {
     # Add more mappings as needed
 }
 
+
 # Function to get user info by ID
 def get_user_display_name(user_id):
     try:
         user_info = client.users_info(user=user_id)
-        return user_info["user"]["profile"]["display_name"] or user_info["user"]["profile"]["real_name"]
+        return (
+            user_info["user"]["profile"]["display_name"]
+            or user_info["user"]["profile"]["real_name"]
+        )
     except SlackApiError as e:
         print(f"Error fetching user info: {e.response['error']}")
         return "Unknown User"
+
 
 # Function to replace emoji labels with actual emojis
 def replace_emoji_labels(text):
@@ -65,6 +77,7 @@ def replace_emoji_labels(text):
         text = text.replace(f":{alias}:", emoji_char)
     # Replace general emoji aliases
     return emoji.emojize(text)
+
 
 # Function to replace user IDs and channel mentions in text with display names
 def replace_user_ids_and_channels(text):
@@ -80,6 +93,7 @@ def replace_user_ids_and_channels(text):
             words[i] = "`@channel`"
     return " ".join(words)
 
+
 def calculate_file_hash(file_path):
     """Calculate the SHA-256 hash of a file's content."""
     sha256_hash = hashlib.sha256()
@@ -87,6 +101,7 @@ def calculate_file_hash(file_path):
         for chunk in iter(lambda: f.read(4096), b""):
             sha256_hash.update(chunk)
     return sha256_hash.hexdigest()
+
 
 def resolve_file_name_conflict(target_folder, file_name):
     """Resolve file name conflicts by checking content hashes."""
@@ -115,6 +130,7 @@ def resolve_file_name_conflict(target_folder, file_name):
     shutil.move(temp_file_path, new_file_path)
     return new_file_path
 
+
 def download_file(file_url, target_folder, file_name):
     try:
         headers = {"Authorization": f"Bearer {SLACK_TOKEN}"}
@@ -135,6 +151,8 @@ def download_file(file_url, target_folder, file_name):
     except Exception as e:
         print(f"Error downloading file: {e}")
         return False, None
+
+
 # Function to load existing messages from a file
 def load_existing_messages(file_path):
     if not os.path.exists(file_path):
@@ -151,6 +169,7 @@ def load_existing_messages(file_path):
             messages[current_date].append(line.strip())
     return messages
 
+
 # Function to save merged messages to a file
 def save_merged_messages(file_path, existing_messages, new_messages):
     if not new_messages:
@@ -162,13 +181,16 @@ def save_merged_messages(file_path, existing_messages, new_messages):
                 file.write(f"{message}\n")
             file.write("\n")
 
+
 # Function to fetch and save messages
 def fetch_and_save_messages(channel_id, channel_name, channel_type):
     try:
         messages = []
         cursor = None
         while True:
-            response = client.conversations_history(channel=channel_id, cursor=cursor, limit=200)
+            response = client.conversations_history(
+                channel=channel_id, cursor=cursor, limit=200
+            )
             messages.extend(response["messages"])
             cursor = response.get("response_metadata", {}).get("next_cursor")
             if not cursor:
@@ -185,7 +207,13 @@ def fetch_and_save_messages(channel_id, channel_name, channel_type):
             messages_by_date[date].append(message)
 
         # Create folders for different channel types
-        folder_name = DIRECT_MSG_DIRECTORY if channel_type == "im" else GROUP_MSG_DIRECTORY if channel_type == "mpim" else CHANNEL_MSG_DIRECTORY
+        folder_name = (
+            DIRECT_MSG_DIRECTORY
+            if channel_type == "im"
+            else GROUP_MSG_DIRECTORY
+            if channel_type == "mpim"
+            else CHANNEL_MSG_DIRECTORY
+        )
         os.makedirs(folder_name, exist_ok=True)
 
         # Replace spaces in channel_name with underscores for filename
@@ -201,11 +229,15 @@ def fetch_and_save_messages(channel_id, channel_name, channel_type):
         merged_messages = {}
         for date, date_messages in messages_by_date.items():
             merged_messages[date] = []
-            for message in reversed(date_messages):  # Reverse to get chronological order
+            for message in reversed(
+                date_messages
+            ):  # Reverse to get chronological order
                 timestamp = float(message.get("ts", 0))
                 time_str = datetime.fromtimestamp(timestamp).strftime("%H:%M:%S")
                 user_display_name = get_user_display_name(message.get("user", ""))
-                text = replace_emoji_labels(replace_user_ids_and_channels(message.get("text", "")))
+                text = replace_emoji_labels(
+                    replace_user_ids_and_channels(message.get("text", ""))
+                )
 
                 # Write message
                 message_str = f"**{user_display_name}** ({time_str}): {text}"
@@ -213,29 +245,52 @@ def fetch_and_save_messages(channel_id, channel_name, channel_type):
                 # Handle threads
                 if "thread_ts" in message:
                     thread_ts = message["thread_ts"]
-                    thread_messages = client.conversations_replies(channel=channel_id, ts=thread_ts)["messages"]
-                    for thread_message in thread_messages[1:]:  # Skip the first message (already written)
+                    thread_messages = client.conversations_replies(
+                        channel=channel_id, ts=thread_ts
+                    )["messages"]
+                    for thread_message in thread_messages[
+                        1:
+                    ]:  # Skip the first message (already written)
                         thread_timestamp = float(thread_message.get("ts", 0))
-                        thread_time_str = datetime.fromtimestamp(thread_timestamp).strftime("%H:%M:%S")
-                        thread_user_display_name = get_user_display_name(thread_message.get("user", ""))
-                        thread_text = replace_emoji_labels(replace_user_ids_and_channels(thread_message.get("text", "")))
+                        thread_time_str = datetime.fromtimestamp(
+                            thread_timestamp
+                        ).strftime("%H:%M:%S")
+                        thread_user_display_name = get_user_display_name(
+                            thread_message.get("user", "")
+                        )
+                        thread_text = replace_emoji_labels(
+                            replace_user_ids_and_channels(
+                                thread_message.get("text", "")
+                            )
+                        )
                         message_str += f"\n    **{thread_user_display_name}** ({thread_time_str}): {thread_text}"
 
                 # Handle reactions
                 if "reactions" in message:
                     reactions = message["reactions"]
-                    reaction_str = ", ".join([f"{replace_emoji_labels(f':{r['name']}:')} (x{r['count']})" for r in reactions])
+                    reaction_str = ", ".join(
+                        [
+                            f"{replace_emoji_labels(f':{r["name"]}:')} (x{r['count']})"
+                            for r in reactions
+                        ]
+                    )
                     message_str += f"\n    _Reactions_: {reaction_str}"
 
                 ## Handle file attachments
                 if BACKUP_ATTACHMENTS and "files" in message:
-                    attachment_folder = os.path.join(ATTACHMENTS_DIRECTORY, safe_channel_name)
+                    attachment_folder = os.path.join(
+                        ATTACHMENTS_DIRECTORY, safe_channel_name
+                    )
                     os.makedirs(attachment_folder, exist_ok=True)
                     image_links = []
                     for file_info in message["files"]:
                         file_url = file_info["url_private"]
-                        file_name = f"{user_display_name.replace(' ', '_')}_{file_info['name']}"
-                        success, final_file_path = download_file(file_url, attachment_folder, file_name)
+                        file_name = (
+                            f"{user_display_name.replace(' ', '_')}_{file_info['name']}"
+                        )
+                        success, final_file_path = download_file(
+                            file_url, attachment_folder, file_name
+                        )
                         if success:
                             if file_info["mimetype"].startswith("image"):
                                 image_links.append(
@@ -244,7 +299,9 @@ def fetch_and_save_messages(channel_id, channel_name, channel_type):
                             else:
                                 message_str += f"\n    [Attachment: {file_name}]({os.path.relpath(final_file_path, folder_name)})"
                         else:
-                            message_str += f"\n    [Attachment: {file_name} (failed to download)]"
+                            message_str += (
+                                f"\n    [Attachment: {file_name} (failed to download)]"
+                            )
                     # Display images in a two-column layout using HTML
                     if image_links:
                         message_str += "\n\n<table>"
@@ -265,6 +322,7 @@ def fetch_and_save_messages(channel_id, channel_name, channel_type):
     except SlackApiError as e:
         print(f"Error fetching messages from {channel_name}: {e.response['error']}")
 
+
 # Fetch all channels and messages
 def backup_all_messages():
     try:
@@ -272,13 +330,19 @@ def backup_all_messages():
         public_channels = client.conversations_list(types="public_channel")["channels"]
         for channel in public_channels:
             if BACKUP_LIST == ["all"] or channel["name"] in BACKUP_LIST:
-                fetch_and_save_messages(channel["id"], channel["name"], "public_channel")
+                fetch_and_save_messages(
+                    channel["id"], channel["name"], "public_channel"
+                )
 
         # Fetch private channels
-        private_channels = client.conversations_list(types="private_channel")["channels"]
+        private_channels = client.conversations_list(types="private_channel")[
+            "channels"
+        ]
         for channel in private_channels:
             if BACKUP_LIST == ["all"] or channel["name"] in BACKUP_LIST:
-                fetch_and_save_messages(channel["id"], channel["name"], "private_channel")
+                fetch_and_save_messages(
+                    channel["id"], channel["name"], "private_channel"
+                )
 
         # Fetch multiparty direct messages (mpim)
         mpim_channels = client.conversations_list(types="mpim")["channels"]
@@ -296,5 +360,7 @@ def backup_all_messages():
     except SlackApiError as e:
         print(f"Error fetching channels: {e.response['error']}")
 
+
 if __name__ == "__main__":
     backup_all_messages()
+
