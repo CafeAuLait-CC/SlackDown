@@ -1,0 +1,12 @@
+[Slack]
+User_OAuth_Token = xoxp-your-slack-user-oauth-token
+
+[Directories]
+Direct_Msg_Directory = dm
+Group_Msg_Directory = groups
+Channel_Msg_Directory = channels
+Attachment_Directory = attachments
+
+[Options]
+Backup_Attachments = True
+Backup_List = all
