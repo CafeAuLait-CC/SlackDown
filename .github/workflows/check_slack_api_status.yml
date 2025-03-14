@@ -1,0 +1,20 @@
+name: Check Slack API Status
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Run every hour
+  workflow_dispatch:
+
+jobs:
+  check-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Slack API Status
+        run: |
+          STATUS=$(curl -s https://status.slack.com/api/v2.0.0/current | jq -r '.status')
+          if [ "$STATUS" != "ok" ]; then
+            echo "Slack API is not operational. Status: $STATUS"
+            exit 1
+          else
+            echo "Slack API is operational."
+          fi
