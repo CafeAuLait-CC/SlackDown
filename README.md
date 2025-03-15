@@ -17,7 +17,7 @@ This Python script allows you to back up Slack messages (including public channe
 ## Prerequisites
 
 - Python 3.7 or higher.
-- A Slack app with the necessary permissions and a User OAuth token.
+- A Slack app with the necessary permissions and a User OAuth token. See [this instruction](SlackAPISetup/SlackAppSetup.md) for more details.
 
 ## Setup
 
@@ -37,21 +37,21 @@ This Python script allows you to back up Slack messages (including public channe
    ```
 
 3. **Create a Slack App**:
-   - Go to the [Slack API](https://api.slack.com/apps) and create a new app. See [this instruction](SlackAppSetup.md) for more details.
+   - Go to the [Slack API](https://api.slack.com/apps) and create a new app. See [this instruction](SlackAPISetup/SlackAppSetup.md) for more details.
    - Install the app to your workspace and obtain the **User OAuth Token**.
 
 4. **Edit the `config.txt` File**:
    Edit the `config.txt` file in the project directory with the following content:
 
-   ```ini
+	 ```
    [Slack]
    User_OAuth_Token = xoxp-your-slack-user-oauth-token
 
    [Directories]
-   Direct_Msg_Directory = dm
-   Group_Msg_Directory = groups
-   Channel_Msg_Directory = channels
-   Attachment_Directory = attachments
+   Direct_Msg_Directory = backup/dm
+   Group_Msg_Directory = backup/groups
+   Channel_Msg_Directory = backup/channels
+   Attachment_Directory = backup/attachments
 
    [Options]
    Backup_Attachments = True
@@ -118,7 +118,7 @@ attachments/
 
 ## Notes
 
-- The script appends new messages to existing backup files, ensuring that edits and new messages are reflected.
+- Run this script periodically (e.g. monthly or every 3 months) could appends new messages to existing backup files, ensuring that edits and new messages are reflected.
 - Files with the same content are not duplicated; instead, the existing file is reused.
 
 ## License
