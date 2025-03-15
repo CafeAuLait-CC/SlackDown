@@ -1,55 +1,46 @@
-import configparser
 from src.api import SlackAPI
-from src.helpers import replace_emoji_labels, replace_user_ids_and_channels
-from src.utils import download_file
+from src.config import load_config
+from src.message_processor import fetch_and_save_messages
 
 
-# Load configuration
-config = configparser.ConfigParser()
-config.read("config.txt")
-SLACK_TOKEN = config.get("Slack", "User_OAuth_Token")
-
-# Initialize Slack API
-slack_api = SlackAPI(SLACK_TOKEN)
 
 # Fetch all channels and messages
-def backup_all_messages():
-    try:
+def backup_all_messages(config):
+
+        slack = SlackAPI(config["slack_token"])
+
         # Fetch public channels
-        public_channels = client.conversations_list(types="public_channel")["channels"]
+        public_channels = slack.get_conversations_list(type="public_channel")
         for channel in public_channels:
-            if BACKUP_LIST == ["all"] or channel["name"] in BACKUP_LIST:
+            if config["backup_list"] == ["all"] or channel["name"] in config["backup_list"]:
                 fetch_and_save_messages(
                     channel["id"], channel["name"], "public_channel"
                 )
 
         # Fetch private channels
-        private_channels = client.conversations_list(types="private_channel")[
-            "channels"
-        ]
+        private_channels = slack.get_conversations_list(type="private_channel")
         for channel in private_channels:
-            if BACKUP_LIST == ["all"] or channel["name"] in BACKUP_LIST:
+            if config["backup_list"] == ["all"] or channel["name"] in config["backup_list"]:
                 fetch_and_save_messages(
                     channel["id"], channel["name"], "private_channel"
                 )
 
         # Fetch multiparty direct messages (mpim)
-        mpim_channels = client.conversations_list(types="mpim")["channels"]
+        mpim_channels = slack.get_conversations_list(type="mpim")
         for channel in mpim_channels:
-            if BACKUP_LIST == ["all"] or channel["name"] in BACKUP_LIST:
+            if config["backup_list"] == ["all"] or channel["name"] in config["backup_list"]:
                 fetch_and_save_messages(channel["id"], channel["name"], "mpim")
 
         # Fetch direct messages (im)
-        im_channels = client.conversations_list(types="im")["channels"]
+        im_channels = slack.get_conversations_list(type="im")
         for channel in im_channels:
-            user_display_name = get_user_display_name(channel["user"])
-            if BACKUP_LIST == ["all"] or user_display_name in BACKUP_LIST:
+            user_display_name = slack.get_user_display_name(channel["user"])
+            if config["backup_list"] == ["all"] or user_display_name in config["backup_list"]:
                 fetch_and_save_messages(channel["id"], user_display_name, "im")
 
-    except SlackApiError as e:
-        print(f"Error fetching channels: {e.response['error']}")
+    
 
 
 if __name__ == "__main__":
-    backup_all_messages()
-
+    config = load_config()
+    backup_all_messages(config)
