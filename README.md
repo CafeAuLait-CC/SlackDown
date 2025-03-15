@@ -1,7 +1,5 @@
 # Slack Message Backup Tool
 
-![Slack API Status](https://img.shields.io/endpoint?url=https://status.slack.com/api/v2.0.0/current.json)
-
 This Python script allows you to back up Slack messages (including public channels, private channels, direct messages, and group messages) to local Markdown files. It also supports downloading and organizing file attachments.
 
 ## Features
