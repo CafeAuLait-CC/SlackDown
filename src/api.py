@@ -7,14 +7,11 @@ from slack_sdk.errors import SlackApiError
 
 
 class SlackAPI:
-
     def __init__(self, token):
-
         os.environ["SSL_CERT_FILE"] = certifi.where()
 
         # Initialize Slack client
         self.client = WebClient(token=token)
-
 
     # Function to get user info by ID
     def get_user_display_name(self, user_id):
@@ -28,17 +25,14 @@ class SlackAPI:
             print(f"Error fetching user info: {e.response['error']}")
             return "Unknown User"
 
-
     def get_conversations_list(self, type):
         try:
             return self.client.conversations_list(types=type)["channels"]
         except SlackApiError as e:
             print(f"Error fetching channels: {e.response['error']}")
 
-
     def get_conversations_history(self, channel_id, channel_name):
         try:
-
             messages = []
             cursor = None
             while True:
@@ -54,15 +48,22 @@ class SlackAPI:
         except SlackApiError as e:
             print(f"Error fetching messages from {channel_name}: {e.response['error']}")
 
-
     def get_conversations_replies(self, channel_id, channel_name, thread_ts):
         try:
-            return self.client.conversations_replies(
-                                channel=channel_id, ts=thread_ts
-                            )["messages"]
+            return self.client.conversations_replies(channel=channel_id, ts=thread_ts)[
+                "messages"
+            ]
         except SlackApiError as e:
             print(f"Error fetching messages from {channel_name}: {e.response['error']}")
 
-
-    
-
+    def test_token(self):
+        try:
+            self.client.users_list()
+        except SlackApiError as e:
+            if e.response["error"] == "invalid_auth":
+                print(
+                    f"Invalid token. Please make sure to have your correct User_OAuth_Token in config.txt"
+                )
+            else:
+                print(e)
+            exit(-1)

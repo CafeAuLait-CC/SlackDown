@@ -45,11 +45,10 @@ def resolve_file_name_conflict(target_folder, file_name):
     return new_file_path
 
 
-
 def download_file(file_url, target_folder, file_name):
     try:
         config = load_config()
-        headers = {"Authorization": f"Bearer {config["slack_token"]}"}
+        headers = {"Authorization": f"Bearer {config['slack_token']}"}
         response = requests.get(file_url, headers=headers, stream=True)
         if response.status_code == 200:
             # Download the file to a temporary location
@@ -67,5 +66,3 @@ def download_file(file_url, target_folder, file_name):
     except Exception as e:
         print(f"Error downloading file: {e}")
         return False, None
-
-

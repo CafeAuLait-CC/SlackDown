@@ -15,7 +15,7 @@ This Python script allows you to back up Slack messages (including public channe
 
 ## Prerequisites
 
-- Python 3.7 or higher.
+- Python 3.8 or higher.
 - A Slack app with the necessary permissions and a User OAuth token. See [this instruction](SlackAPISetup/SlackAppSetup.md) for more details.
 
 ## Setup
@@ -30,18 +30,23 @@ This Python script allows you to back up Slack messages (including public channe
 2. **Install Dependencies**:
 
    Linux & macOS:
+
    ```bash
    > python3 -m venv ./slack_env
    > source ./slack_env/bin/activate
    > pip install -r requirements.txt
    ```
+
    Windows (PowerShell):
+
    ```bash
    > python3 -m venv slack_env
    > slack_env\Scripts\Activate.ps1
    > pip install -r requirements.txt
    ```
-   **Note**: You might need to run the following command if you encounter an error running the `Activate.ps1` in PowerShell. 
+
+   **Note**: You might need to run the following command if you encounter an error running the `Activate.ps1` in PowerShell.
+
    ```bash
    > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    ```
@@ -72,7 +77,7 @@ This Python script allows you to back up Slack messages (including public channe
 
    - You can choose whether or not you want to backup the attachments in the conversation, by setting the `Backup_Attachments` to `True` or `False`.
 
-   - The `Backup_List` could be `all` or a specific list of conversations you want to backup, e.g. `Backup_List = general, bob` means backup the messages from the `general` channel and your DMs with `bob`, `bob` is the __[display name]__ of a user in your workspace.
+   - The `Backup_List` could be `all` or a specific list of conversations you want to backup, e.g. `Backup_List = general, bob` means backup the messages from the `general` channel and your DMs with `bob`, `bob` is the **[display name]** of a user in your workspace.
 
 6. **Run the Script**:
 
