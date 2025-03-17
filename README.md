@@ -1,6 +1,6 @@
-# Slack Message Backup Tool
+# SlackDown
 
-This Python script allows you to back up Slack messages (including public channels, private channels, direct messages, and group messages) to local Markdown files. It also supports downloading and organizing file attachments.
+SlackDown allows you to back up Slack messages (including public channels, private channels, direct messages, and group messages) to local Markdown files. It also supports downloading and organizing file attachments.
 
 ## Features
 
@@ -23,8 +23,8 @@ This Python script allows you to back up Slack messages (including public channe
 1. **Clone the Repository**:
 
    ```bash
-   > git clone https://github.com/CafeAuLait-CC/Slack-Message-Backup.git
-   > cd Slack-Message-Backup
+   > git clone https://github.com/CafeAuLait-CC/SlackDown.git
+   > cd SlackDown
    ```
 
 2. **Install Dependencies**:
@@ -82,7 +82,7 @@ This Python script allows you to back up Slack messages (including public channe
 6. **Run the Script**:
 
    ```bash
-   > python slack_backup.py
+   > python slackdown.py
    ```
 
    The script will back up messages and attachments to the specified directories.
