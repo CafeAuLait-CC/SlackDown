@@ -19,6 +19,7 @@ SLACK_EMOJI_MAPPING = {
     "zzz": "💤",
     "raised_hands": "🙌",
     "smiling_imp": "😈",
+    "tada": "🎉",
     # Add more mappings as needed
 }
 
