@@ -16,6 +16,9 @@ def calculate_file_hash(file_path):
             sha256_hash.update(chunk)
     return sha256_hash.hexdigest()
 
+def calculate_url_hash(url):
+    return hashlib.sha256(url).hexdigest()[:16]
+
 
 def resolve_file_name_conflict(target_folder, file_name):
     """Resolve file name conflicts by checking content hashes."""
