@@ -23,6 +23,11 @@ SLACK_EMOJI_MAPPING = {
     "scream_cat": "🙀",
     "pensive": "😔",
     "smiling_face_with_3_hearts": "🥰",
+    "mega": "📣",
+    "smiley": "😃",
+    "cry": "😢",
+    "smile": "😄",
+    "laughing": "😆"
     # Add more mappings as needed
 }
 
