@@ -27,7 +27,8 @@ SLACK_EMOJI_MAPPING = {
     "smiley": "😃",
     "cry": "😢",
     "smile": "😄",
-    "laughing": "😆"
+    "laughing": "😆",
+    "heart": "❤️",
     # Add more mappings as needed
 }
 
